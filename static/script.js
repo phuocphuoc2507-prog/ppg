@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const addedWeightSpan = document.getElementById('added-weight');
     const timeLeftSpan = document.getElementById('time-left');
     const thankyouMessage = document.getElementById('thankyou-message');
+    // Lấy các phần tử hiển thị điểm (MỚI)
+    const pointsDisplay = document.getElementById('points-display');
+    const pointsEarnedSpan = document.getElementById('points-earned');
+    const totalPointsSpan = document.getElementById('total-points');
+
 
     // --- THAY ĐỔI: Lấy các phần tử cho cả 2 cân ---
     const binElements = {
@@ -33,6 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
         weighing: document.getElementById('status-weighing'),
         thankyou: document.getElementById('status-thankyou')
     };
+
+    // Lấy các phần tử form nhập thông tin người lạ
+    const unknownInfoForm = document.getElementById('unknown-info-form');
+    const inputName = document.getElementById('input-name');
+    const inputClass = document.getElementById('input-class');
+    const unknownInfoMessage = document.getElementById('unknown-info-message');
+    // Xử lý gửi thông tin người lạ lên server
+    if (unknownInfoForm) {
+        unknownInfoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = inputName.value.trim();
+            const className = inputClass.value.trim();
+            if (name && className) {
+                socket.emit('unknown_info_submit', { name: name, class_name: className });
+                unknownInfoMessage.textContent = 'Đã gửi thông tin! Vui lòng chờ...';
+                inputName.value = '';
+                inputClass.value = '';
+            }
+        });
+    }
 
     function showStatus(state) {
         Object.values(statusCards).forEach(card => card.style.display = 'none');
@@ -87,6 +112,15 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('show_thankyou', (data) => {
         showStatus('thankyou');
         thankyouMessage.textContent = data.message;
+
+        // Hiển thị điểm nếu có (MỚI)
+        if (data.points_earned > 0) {
+            pointsEarnedSpan.textContent = data.points_earned;
+            totalPointsSpan.textContent = data.total_points;
+            pointsDisplay.style.display = 'block'; // Hiện vùng hiển thị điểm
+        } else {
+            pointsDisplay.style.display = 'none'; // Ẩn đi nếu không nhận được điểm
+        }
     });
 
     document.getElementById('yes-button').addEventListener('click', () => {

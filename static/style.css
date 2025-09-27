@@ -54,3 +54,15 @@ header h1 { color: #2c3e50; }
     font-size: 1.2em;
     color: #7f8c8d;
 }
+
+/* --- CSS MỚI CHO HIỂN THỊ ĐIỂM --- */
+.points-value {
+    font-weight: bold;
+    color: #2980b9;
+    font-size: 1.2em;
+}
+
+#points-display p {
+    margin: 8px 0;
+    font-size: 1.1em;
+}

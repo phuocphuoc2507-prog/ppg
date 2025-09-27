@@ -53,12 +53,22 @@
                 <p>Thời gian còn lại: <span id="time-left">15</span> giây</p>
                 <p class="instruction">(Trong chế độ giả lập, nhấn Spacebar để thêm giấy)</p>
             </div>
-             <div id="status-failure-learning" class="status-card" style="display: none;">
-                <h2>Đang cập nhật...</h2>
-                <p>Mình chưa nhận ra bạn. Xin chờ một lát để lưu lại hình ảnh nhé...</p>
+            <div id="status-failure-learning" class="status-card" style="display: none;">
+                <h2>Không nhận diện được khuôn mặt</h2>
+                <p>Mình chưa nhận ra bạn. Vui lòng nhập thông tin bên dưới để lưu lại hình ảnh:</p>
+                <form id="unknown-info-form">
+                    <input type="text" id="input-name" placeholder="Họ và tên" required style="margin:5px; padding:8px; width:200px;" />
+                    <input type="text" id="input-class" placeholder="Lớp" required style="margin:5px; padding:8px; width:100px;" />
+                    <button type="submit" id="submit-unknown-info" style="padding:8px 20px;">Xác nhận</button>
+                </form>
+                <p id="unknown-info-message" style="color:green;"></p>
             </div>
              <div id="status-thankyou" class="status-card" style="display: none;">
                 <h2 id="thankyou-message">Cảm ơn bạn!</h2>
+                <div id="points-display" style="display: none;">
+                    <p>Bạn nhận được: <span id="points-earned" class="points-value">0</span> điểm</p>
+                    <p>Tổng điểm: <span id="total-points" class="points-value">0</span> điểm</p>
+                </div>
             </div>
         </main>
     </div>

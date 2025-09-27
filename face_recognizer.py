@@ -13,21 +13,37 @@ class FaceRecognizer:
         """
         Hàm khởi tạo, tải tất cả các model và dữ liệu cần thiết lên.
         """
-        print("Dang tai mo hinh AI va co so du lieu...")
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.reload_data()
+
+    def reload_data(self):
+        """
+        Tải hoặc tải lại toàn bộ index và metadata.
+        Hàm này sẽ được gọi bởi worker sau khi cập nhật dataset.
+        """
+        print("[AI] Dang tai/tai lai mo hinh AI va co so du lieu...")
         self.index = None
         self.student_ids = []
         self.df_metadata = None
         
-        # SỬA LỖI 1: Thêm đầy đủ tên file .xml
-        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
         try:
-            self.index = faiss.read_index(os.path.join(config.DATABASE_PATH, "face_index.faiss"))
-            with open(os.path.join(config.DATABASE_PATH, "student_ids.pkl"), "rb") as f:
+            face_index_path = os.path.join(config.DATABASE_PATH, "face_index.faiss")
+            student_ids_path = os.path.join(config.DATABASE_PATH, "student_ids.pkl")
+            
+            # Kiểm tra sự tồn tại của các file
+            if not os.path.exists(face_index_path):
+                raise FileNotFoundError(f"Không tìm thấy file index AI: {face_index_path}")
+            if not os.path.exists(student_ids_path):
+                raise FileNotFoundError(f"Không tìm thấy file student IDs: {student_ids_path}")
+            if not os.path.exists(config.METADATA_FILE):
+                raise FileNotFoundError(f"Không tìm thấy file metadata: {config.METADATA_FILE}")
+                
+            self.index = faiss.read_index(face_index_path)
+            with open(student_ids_path, "rb") as f:
                 self.student_ids = pickle.load(f)
             self.df_metadata = pd.read_csv(config.METADATA_FILE)
             self.df_metadata.set_index('student_id', inplace=True)
-            print("Tai du lieu AI thanh cong.")
+            print("[AI] Tai du lieu AI thanh cong.")
         except Exception as e:
             print(f"!!! LOI: Khong the tai CSDL AI. Hay chay file build_database.py. Chi tiet: {e}")
 
@@ -61,7 +77,13 @@ class FaceRecognizer:
             smart_face_crop = frame[y1:y2, x1:x2]
 
             try:
-                embedding_obj = DeepFace.represent(img_path=smart_face_crop, model_name=config.MODEL_NAME, enforce_detection=False)
+                # --- THAY ĐỔI TẠI ĐÂY ---
+                # Thêm tham số detector_backend để chọn bộ phát hiện khuôn mặt.
+                # 'mtcnn' hoặc 'retinaface' là những lựa chọn tốt để thay thế.
+                embedding_obj = DeepFace.represent(img_path=smart_face_crop, 
+                                                   model_name=config.MODEL_NAME, 
+                                                   detector_backend='mtcnn', # <--- THAM SỐ MỚI
+                                                   enforce_detection=False)
                 embedding = np.array([embedding_obj[0]['embedding']], dtype='f4')
                 faiss.normalize_L2(embedding)
                 

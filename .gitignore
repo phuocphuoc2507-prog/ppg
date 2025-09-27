@@ -1,0 +1,27 @@
+# Môi trường ảo Python
+venv/
+.venv/
+env/
+.env
+
+# Thư mục cache của Python
+__pycache__/
+*.pyc
+
+# File CSDL và các file được tạo tự động
+/database/
+/dataset/
+/unidentified/
+papergo.db
+*.sqlite3
+
+# File index và metadata của AI
+face_index.faiss
+student_ids.pkl
+
+# Thư mục build của PlatformIO (cho firmware ESP32)
+PaperGo_ESP32_Firmware/.pio/
+
+# Cấu hình của các IDE
+.vscode/
+.idea/
